@@ -1,0 +1,3 @@
+[submodule "dpsim-villas"]
+	path = dpsim-villas
+	url = git@github.com:JTS22/dpsim-villas.git

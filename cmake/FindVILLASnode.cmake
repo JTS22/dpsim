@@ -1,5 +1,5 @@
-find_path(VILLASNODE_INCLUDE_DIR
-	NAMES villas/shmem.h
+SET(VILLASNODE_INCLUDE_DIR
+	/villasnode/include/villas
 )
 
 find_library(VILLASNODE_LIBRARY
