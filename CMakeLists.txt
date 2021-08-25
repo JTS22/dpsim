@@ -222,9 +222,9 @@ add_subdirectory(models)
 add_subdirectory(Source)
 add_subdirectory(docs)
 
-if(DPSIM_BUILD_EXAMPLES)
-	add_subdirectory(Examples)
-endif(DPSIM_BUILD_EXAMPLES)
+# if(DPSIM_BUILD_EXAMPLES)
+# 	add_subdirectory(Examples)
+# endif(DPSIM_BUILD_EXAMPLES)
 
 if(WITH_PYBIND)
 	set(DPSIMPY_INCLUDE_DIRS
