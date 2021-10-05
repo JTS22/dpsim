@@ -1,3 +1,11 @@
+/* Copyright 2017-2021 Institute for Automation of Complex Power Systems,
+ *                     EONERC, RWTH Aachen University
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *********************************************************************************/
+
 #include "cps/CIM/Reader.h"
 #include <DPsim.h>
 #include <cps/CSVReader.h>
@@ -11,13 +19,12 @@ using namespace CPS::CIM;
 int main(int argc, char** argv){
 
 	// Simulation parameters
-	Examples::CIGREMV::ScenarioConfig scenario;
+	Examples::Grids::CIGREMV::ScenarioConfig scenario;
 	std::list<fs::path> filenames;
 	Real timeStep;
 	Real finalTime;
-		
+
 	// Set remaining simulation parameters using default values or command line infos
-	std::cout<<std::experimental::filesystem::current_path()<<std::endl;
 	CommandLineArgs args(argc, argv);
 	if (argc <= 1) {
 		filenames = DPsim::Utils::findFiles({
@@ -34,7 +41,7 @@ int main(int argc, char** argv){
 		timeStep = args.timeStep;
 		finalTime = args.duration;
 	}
-	
+
 	// ----- POWERFLOW FOR INITIALIZATION -----
 	// read original network topology
 	String simName = "EMT_CIGRE_MV_withDG_withLoadStep";
@@ -42,7 +49,7 @@ int main(int argc, char** argv){
 	Logger::setLogDir("logs/" + simNamePF);
     CIM::Reader reader(simNamePF, Logger::Level::debug, Logger::Level::debug);
     SystemTopology systemPF = reader.loadCIM(scenario.systemFrequency, filenames, Domain::SP);
-	Examples::CIGREMV::addInvertersToCIGREMV(systemPF, scenario, Domain::SP);
+	Examples::Grids::CIGREMV::addInvertersToCIGREMV(systemPF, scenario, Domain::SP);
 
 	// define logging
     auto loggerPF = DPsim::DataLogger::make(simNamePF);
@@ -58,20 +65,20 @@ int main(int argc, char** argv){
 	simPF.setFinalTime(2);
 	simPF.setDomain(Domain::SP);
 	simPF.setSolverType(Solver::Type::NRP);
-	simPF.doInitFromNodesAndTerminals(true);	
+	simPF.doInitFromNodesAndTerminals(true);
     simPF.addLogger(loggerPF);
     simPF.run();
 
-	
+
 	// ----- DYNAMIC SIMULATION -----
 	Logger::setLogDir("logs/" + simName);
 	CIM::Reader reader2(simName, Logger::Level::debug, Logger::Level::debug);
     SystemTopology systemEMT = reader2.loadCIM(scenario.systemFrequency, filenames, CPS::Domain::EMT, PhaseType::ABC);
-	Examples::CIGREMV::addInvertersToCIGREMV(systemEMT, scenario, Domain::EMT);
+	Examples::Grids::CIGREMV::addInvertersToCIGREMV(systemEMT, scenario, Domain::EMT);
 	reader2.initDynamicSystemTopologyWithPowerflow(systemPF, systemEMT);
 
 	auto logger = DPsim::DataLogger::make(simName);
-	
+
 	// log node voltages
 	for (auto node : systemEMT.mNodes)
 		logger->addAttribute(node->name() + ".V", node->attribute("v"));
@@ -81,7 +88,7 @@ int main(int argc, char** argv){
 		if (dynamic_pointer_cast<CPS::EMT::Ph3::PiLine>(comp))
 			logger->addAttribute(comp->name() + ".I", comp->attribute("i_intf"));
 	}
-	
+
 	// log load currents
 	for (auto comp : systemEMT.mComponents) {
 		if (dynamic_pointer_cast<CPS::EMT::Ph3::RXLoad>(comp))
@@ -90,19 +97,19 @@ int main(int argc, char** argv){
 
 	// log output of PV connected at N11
 	auto pv = systemEMT.component<CPS::SimPowerComp<Real>>("pv_N11");
-	Examples::CIGREMV::logPVAttributes(logger, pv);
+	Examples::Grids::CIGREMV::logPVAttributes(logger, pv);
 
-	std::shared_ptr<SwitchEvent3Ph> loadStepEvent = Examples::createEventAddPowerConsumption3Ph("N11", 2-timeStep, 1500.0e3, systemEMT, Domain::EMT, logger);
+	std::shared_ptr<SwitchEvent3Ph> loadStepEvent = Examples::Events::createEventAddPowerConsumption3Ph("N11", 2-timeStep, 1500.0e3, systemEMT, Domain::EMT, logger);
 	Simulation sim(simName, Logger::Level::debug);
 	sim.setSystem(systemEMT);
 	sim.setTimeStep(timeStep);
 	sim.setFinalTime(finalTime);
 	sim.setDomain(Domain::EMT);
 	sim.setSolverType(Solver::Type::MNA);
-	sim.doInitFromNodesAndTerminals(true);	
+	sim.doInitFromNodesAndTerminals(true);
 	sim.addEvent(loadStepEvent);
 	sim.doSteadyStateInit(false);
 	sim.addLogger(logger);
-	
+
 	sim.run();
 }

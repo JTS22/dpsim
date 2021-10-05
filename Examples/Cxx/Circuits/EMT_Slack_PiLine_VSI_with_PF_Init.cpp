@@ -1,4 +1,4 @@
-/* Copyright 2017-2020 Institute for Automation of Complex Power Systems,
+/* Copyright 2017-2021 Institute for Automation of Complex Power Systems,
  *                     EONERC, RWTH Aachen University
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -14,8 +14,8 @@ using namespace CPS;
 
 int main(int argc, char* argv[]) {
 
-	CIM::Examples::SGIB::ScenarioConfig scenario;
-	
+	CIM::Examples::Grids::SGIB::ScenarioConfig scenario;
+
 	Real finalTime = 2;
 	Real timeStep = 0.0001;
 	String simName = "EMT_Slack_PiLine_VSI_with_PF_Init";
@@ -59,12 +59,12 @@ int main(int argc, char* argv[]) {
 
 	auto loadPF = SP::Ph1::Load::make("Load", Logger::Level::debug);
 	loadPF->setParameters(-scenario.pvNominalActivePower, -scenario.pvNominalReactivePower, scenario.systemNominalVoltage);
-	loadPF->modifyPowerFlowBusType(PowerflowBusType::PQ); 
+	loadPF->modifyPowerFlowBusType(PowerflowBusType::PQ);
 
 	// Topology
 	extnetPF->connect({ n1PF });
 	linePF->connect({ n1PF, n2PF });
-	loadPF->connect({ n2PF });	
+	loadPF->connect({ n2PF });
 	auto systemPF = SystemTopology(50,
 			SystemNodeList{n1PF, n2PF},
 			SystemComponentList{extnetPF, linePF, loadPF});
@@ -111,14 +111,14 @@ int main(int argc, char* argv[]) {
 	// Topology
 	extnetEMT->connect({ n1EMT });
 	lineEMT->connect({ n1EMT, n2EMT });
-	pv->connect({ n2EMT });	
+	pv->connect({ n2EMT });
 	auto systemEMT = SystemTopology(50,
 			SystemNodeList{n1EMT, n2EMT},
 			SystemComponentList{extnetEMT, lineEMT, pv});
 
 	// Initialization of dynamic topology
 	CIM::Reader reader(simNameEMT, Logger::Level::debug);
-	reader.initDynamicSystemTopologyWithPowerflow(systemPF, systemEMT);			
+	reader.initDynamicSystemTopologyWithPowerflow(systemPF, systemEMT);
 
 	// Logging
 	auto loggerEMT = DataLogger::make(simNameEMT);
@@ -126,10 +126,10 @@ int main(int argc, char* argv[]) {
 	loggerEMT->addAttribute("v2", n2EMT->attribute("v"));
 	loggerEMT->addAttribute("i12", lineEMT->attribute("i_intf"));
 
-	CIM::Examples::CIGREMV::logPVAttributes(loggerEMT, pv);
+	CIM::Examples::Grids::CIGREMV::logPVAttributes(loggerEMT, pv);
 
 	// load step sized in absolute terms
-	// std::shared_ptr<SwitchEvent3Ph> loadStepEvent = CIM::Examples::createEventAddPowerConsumption3Ph("n2", std::round(5.0/timeStep)*timeStep, 10e6, systemEMT, Domain::EMT, loggerEMT);
+	// std::shared_ptr<SwitchEvent3Ph> loadStepEvent = CIM::Examples::Events::createEventAddPowerConsumption3Ph("n2", std::round(5.0/timeStep)*timeStep, 10e6, systemEMT, Domain::EMT, loggerEMT);
 
 	// Simulation
 	Simulation sim(simNameEMT, Logger::Level::debug);

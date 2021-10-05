@@ -1,3 +1,11 @@
+/* Copyright 2017-2021 Institute for Automation of Complex Power Systems,
+ *                     EONERC, RWTH Aachen University
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *********************************************************************************/
+
 #include "cps/CIM/Reader.h"
 #include <DPsim.h>
 #include <cps/CSVReader.h>
@@ -12,7 +20,6 @@ int main(int argc, char** argv){
 
 	// Find CIM files
 	std::list<fs::path> filenames;
-	std::cout<<std::experimental::filesystem::current_path()<<std::endl;
 	if (argc <= 1) {
 		filenames = DPsim::Utils::findFiles({
 			"Rootnet_FULL_NE_28J17h_DI.xml",
@@ -29,13 +36,13 @@ int main(int argc, char** argv){
 	Real timeStep = 1;
 	Real finalTime = 2;
 	String simName = "PF_CIGRE_MV_withDG";
-	Examples::CIGREMV::ScenarioConfig scenario;
+	Examples::Grids::CIGREMV::ScenarioConfig scenario;
 	Logger::setLogDir("logs/" + simName);
 
 	// read original network topology
     CIM::Reader reader(simName, Logger::Level::debug, Logger::Level::debug);
     SystemTopology system = reader.loadCIM(scenario.systemFrequency, filenames, Domain::SP);
-	Examples::CIGREMV::addInvertersToCIGREMV(system, scenario, Domain::SP);
+	Examples::Grids::CIGREMV::addInvertersToCIGREMV(system, scenario, Domain::SP);
 
     auto loggerPF = DPsim::DataLogger::make(simName);
     for (auto node : system.mNodes)

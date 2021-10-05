@@ -1,3 +1,11 @@
+/* Copyright 2017-2021 Institute for Automation of Complex Power Systems,
+ *                     EONERC, RWTH Aachen University
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ *********************************************************************************/
+
 #include <DPsim.h>
 #include <cps/CSVReader.h>
 #include "../Examples.h"
@@ -10,13 +18,12 @@ using namespace CPS::CIM;
 int main(int argc, char** argv){
 
 	// Simulation parameters
-	Examples::CIGREMV::ScenarioConfig scenario;
+	Examples::Grids::CIGREMV::ScenarioConfig scenario;
 	std::list<fs::path> filenames;
 	Real timeStep;
 	Real finalTime;
-		
+
 	// Set remaining simulation parameters using default values or command line infos
-	std::cout<<std::experimental::filesystem::current_path()<<std::endl;
 	CommandLineArgs args(argc, argv);
 	if (argc <= 1) {
 		filenames = DPsim::Utils::findFiles({
@@ -33,7 +40,7 @@ int main(int argc, char** argv){
 		timeStep = args.timeStep;
 		finalTime = args.duration;
 	}
-	
+
 	// ----- POWERFLOW FOR INITIALIZATION -----
 	// read original network topology
 	//String simName = "DP_CIGRE_MV_withDG_withLoadStep";
@@ -42,7 +49,7 @@ int main(int argc, char** argv){
 	Logger::setLogDir("logs/" + simNamePF);
     CIM::Reader reader(simNamePF, Logger::Level::debug, Logger::Level::debug);
     SystemTopology systemPF = reader.loadCIM(scenario.systemFrequency, filenames, Domain::SP);
-	Examples::CIGREMV::addInvertersToCIGREMV(systemPF, scenario, Domain::SP);	 
+	Examples::Grids::CIGREMV::addInvertersToCIGREMV(systemPF, scenario, Domain::SP);
 
 	// define logging
     auto loggerPF = DPsim::DataLogger::make(simNamePF);
@@ -61,12 +68,12 @@ int main(int argc, char** argv){
     simPF.addLogger(loggerPF);
     simPF.run();
 
-	
+
 	// ----- DYNAMIC SIMULATION -----
 	Logger::setLogDir("logs/" + simName);
 	CIM::Reader reader2(simName, Logger::Level::info, Logger::Level::debug);
     SystemTopology systemDP = reader2.loadCIM(scenario.systemFrequency, filenames, CPS::Domain::DP);
-	Examples::CIGREMV::addInvertersToCIGREMV(systemDP, scenario, Domain::DP);
+	Examples::Grids::CIGREMV::addInvertersToCIGREMV(systemDP, scenario, Domain::DP);
 	reader.initDynamicSystemTopologyWithPowerflow(systemPF, systemDP);
 
 	auto logger = DPsim::DataLogger::make(simName);
@@ -92,14 +99,14 @@ int main(int argc, char** argv){
 	// log output of PV connected at N11
 	String pv_name = "pv_N11";
 	auto pv = systemDP.component<CPS::SimPowerComp<Complex>>(pv_name);
-	Examples::CIGREMV::logPVAttributes(logger, pv);
+	Examples::Grids::CIGREMV::logPVAttributes(logger, pv);
 
 	// // load step sized relative to nominal load at N11
-	// std::shared_ptr<SwitchEvent> loadStepEvent = Examples::createEventAddPowerConsumption("N11", 2-timeStep, 5*systemPF.component<CPS::SP::Ph1::Load>("LOAD-H-11")->attribute<CPS::Real>("P")->get(), systemDP, Domain::DP, logger);
+	// std::shared_ptr<SwitchEvent> loadStepEvent = Examples::Events::createEventAddPowerConsumption("N11", 2-timeStep, 5*systemPF.component<CPS::SP::Ph1::Load>("LOAD-H-11")->attribute<CPS::Real>("P")->get(), systemDP, Domain::DP, logger);
 
 	// load step sized in absolute terms
-	std::shared_ptr<SwitchEvent> loadStepEvent = Examples::createEventAddPowerConsumption("N11", 2-timeStep, 1500.0e3, systemDP, Domain::DP, logger);
-	
+	std::shared_ptr<SwitchEvent> loadStepEvent = Examples::Events::createEventAddPowerConsumption("N11", 2-timeStep, 1500.0e3, systemDP, Domain::DP, logger);
+
 	Simulation sim(simName, Logger::Level::debug);
 	sim.setSystem(systemDP);
 	sim.setTimeStep(timeStep);
