@@ -93,14 +93,14 @@ jobs:
   test-examples-1:
     name: Test Examples 1/2
     needs: [profiling]
-    uses: ./.github/workflows/run_and_profile_example.yaml@master
+    uses: ${{ github.repository }}/.github/workflows/run_and_profile_example.yaml@${{ github.ref }}
     with:
       path: ./build/Examples/Cxx/WSCC_9bus_mult_decoupled
 
   test-examples-2:
     name: Test Examples 2/2
     needs: [profiling]
-    uses: ./.github/workflows/run_and_profile_example.yaml@master
+    uses: ${{ github.repository }}/.github/workflows/run_and_profile_example.yaml@${{ github.ref }}
     with:
       path: ./build/Examples/Cxx/WSCC_9bus_mult_coupled
 
