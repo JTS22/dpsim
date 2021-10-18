@@ -81,9 +81,11 @@ jobs:
         key: build-cache-fedora-${{ github.sha }}
 
     - name: Run Binaries 1/2
+      working-directory: ${{ github.workspace }}
       run: ./build/Examples/Cxx/WSCC_9bus_mult_coupled
 
     - name: Run Binaries 2/2
+      working-directory: ${{ github.workspace }}
       run: ./build/Examples/Cxx/WSCC_9bus_mult_decoupled
 
   cpp-check:
@@ -95,10 +97,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Install cppcheck
+      run: dnf -y install cppcheck ##FIXME: Install cppcheck in Docker image
+
     - name: Run checks for errors
+      working-directory: ${{ github.workspace }}
       run: cppcheck --max-configs=32 -j 32 --error-exitcode=1 -q --std=c++11 -I Include/ -I models/Include/ Source/ Examples/ models/Source/ | tee cppcheck-error.log
 
     - name: Run checks for warnings
+      working-directory: ${{ github.workspace }}
       run: cppcheck --max-configs=32 -j 32 --error-exitcode=1 -q --enable=warning,performance,portability,information,missingInclude --std=c++11 -I Include/ -I models/Include/ Source/ Examples/ models/Source/ | tee cppcheck-warn.log
       continue-on-error: true
 
