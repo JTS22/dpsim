@@ -104,20 +104,41 @@ jobs:
     - name: Install cppcheck
       run: dnf -y install cppcheck ##FIXME: Install cppcheck in Docker image
 
-    - name: Run checks for errors
+    - name: Run cppcheck
       working-directory: ${{ github.workspace }}
-      run: cppcheck --max-configs=32 -j 32 --error-exitcode=1 -q --std=c++11 -I Include/ -I models/Include/ Source/ Examples/ models/Source/ | tee cppcheck-error.log
+      shell: bash
+      run: |
+        set -o pipefail
+        cppcheck --max-configs=32 -j 32 --error-exitcode=1 -q --enable=warning,performance,portability,information,missingInclude --std=c++11 -I Include/ -I models/Include/ Source/ Examples/ models/Source/ | tee cppcheck-output.log
 
-    - name: Run checks for warnings
+    - name: Print cppcheck warnings
       working-directory: ${{ github.workspace }}
-      run: cppcheck --max-configs=32 -j 32 --error-exitcode=1 -q --enable=warning,performance,portability,information,missingInclude --std=c++11 -I Include/ -I models/Include/ Source/ Examples/ models/Source/ | tee cppcheck-warn.log
+      run: ! cat cppcheck-output.log | grep "warning:"
       continue-on-error: true
 
-    - name: Archive profiler output
+    - name: Print cppcheck performance
+      working-directory: ${{ github.workspace }}
+      run: ! cat cppcheck-output.log | grep "performance:"
+      continue-on-error: true
+
+    - name: Print cppcheck portability
+      working-directory: ${{ github.workspace }}
+      run: ! cat cppcheck-output.log | grep "portability:"
+      continue-on-error: true
+
+    - name: Print cppcheck missingInclude
+      working-directory: ${{ github.workspace }}
+      run: ! cat cppcheck-output.log | grep "missingInclude:"
+      continue-on-error: true
+
+    - name: Print cppcheck information
+      working-directory: ${{ github.workspace }}
+      run: ! cat cppcheck-output.log | grep "information:"
+      continue-on-error: true
+
+    - name: Archive cppcheck output
       uses: actions/upload-artifact@v2
       if: failure()
       with:
         name: cppcheck-output
-        path: |
-          cppcheck-error.log
-          cppcheck-warn.log
+        path: cppcheck-output.log
