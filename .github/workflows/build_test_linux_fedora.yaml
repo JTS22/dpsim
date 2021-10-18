@@ -33,6 +33,12 @@ jobs:
       env:
         MAKEFLAGS: "-j2"
 
+    - name: Archive build directory
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-output
+        path: ${{ github.workspace }}/build
+
     - name: Cache build directory
       uses: actions/cache@v2
       with:
@@ -59,7 +65,7 @@ jobs:
       shell: bash
       working-directory: ${{ github.workspace }}
       env:
-        PYTHONPATH: "build:build/Source/Python:Source/Python"
+        PYTHONPATH: "${{ github.workspace }}/build"
       run: pytest -v Examples/Notebooks
     
     - name: Archive notebook outputs
