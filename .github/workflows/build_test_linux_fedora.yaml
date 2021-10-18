@@ -113,27 +113,32 @@ jobs:
 
     - name: Print cppcheck warnings
       working-directory: ${{ github.workspace }}
-      run: ! cat cppcheck-output.log | grep "warning:"
+      shell: bash
+      run: (! cat cppcheck-output.log | grep "warning:")
       continue-on-error: true
 
     - name: Print cppcheck performance
       working-directory: ${{ github.workspace }}
-      run: ! cat cppcheck-output.log | grep "performance:"
+      shell: bash
+      run: (! cat cppcheck-output.log | grep "performance:")
       continue-on-error: true
 
     - name: Print cppcheck portability
       working-directory: ${{ github.workspace }}
-      run: ! cat cppcheck-output.log | grep "portability:"
+      shell: bash
+      run: (! cat cppcheck-output.log | grep "portability:")
       continue-on-error: true
 
     - name: Print cppcheck missingInclude
       working-directory: ${{ github.workspace }}
-      run: ! cat cppcheck-output.log | grep "missingInclude:"
+      shell: bash
+      run: (! cat cppcheck-output.log | grep "missingInclude:")
       continue-on-error: true
 
     - name: Print cppcheck information
       working-directory: ${{ github.workspace }}
-      run: ! cat cppcheck-output.log | grep "information:"
+      shell: bash
+      run: (! cat cppcheck-output.log | grep "information:")
       continue-on-error: true
 
     - name: Archive cppcheck output
