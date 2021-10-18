@@ -28,7 +28,7 @@ jobs:
 
     - name: Build every target
       shell: bash
-      working-directory: ${{ github.workspace }}
+      working-directory: ${{ github.workspace }}/build
       run: cmake --build .
       env:
         MAKEFLAGS: "-j2"
