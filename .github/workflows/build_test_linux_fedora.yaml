@@ -111,41 +111,41 @@ jobs:
       if: ${{ always() && steps.cppcheck.outcome == 'failure' }}
       working-directory: ${{ github.workspace }}
       shell: bash
-      run: (! cat cppcheck-output.log | grep "error:")
+      run: (! cat cppcheck-output.log | grep -A 2 "error:")
 
     - name: Print cppcheck warnings
       if: ${{ always() && steps.cppcheck.outcome == 'failure' }}
       working-directory: ${{ github.workspace }}
       shell: bash
-      run: (! cat cppcheck-output.log | grep "warning:")
+      run: (! cat cppcheck-output.log | grep -A 2 "warning:")
       continue-on-error: true
 
     - name: Print cppcheck performance
       if: ${{ always() && steps.cppcheck.outcome == 'failure' }}
       working-directory: ${{ github.workspace }}
       shell: bash
-      run: (! cat cppcheck-output.log | grep "performance:")
+      run: (! cat cppcheck-output.log | grep -A 2 "performance:")
       continue-on-error: true
 
     - name: Print cppcheck portability
       if: ${{ always() && steps.cppcheck.outcome == 'failure' }}
       working-directory: ${{ github.workspace }}
       shell: bash
-      run: (! cat cppcheck-output.log | grep "portability:")
+      run: (! cat cppcheck-output.log | grep -A 2 "portability:")
       continue-on-error: true
 
     - name: Print cppcheck missingInclude
       if: ${{ always() && steps.cppcheck.outcome == 'failure' }}
       working-directory: ${{ github.workspace }}
       shell: bash
-      run: (! cat cppcheck-output.log | grep "missingInclude:")
+      run: (! cat cppcheck-output.log | grep -A 2 "missingInclude:")
       continue-on-error: true
 
     - name: Print cppcheck information
       if: ${{ always() && steps.cppcheck.outcome == 'failure' }}
       working-directory: ${{ github.workspace }}
       shell: bash
-      run: (! cat cppcheck-output.log | grep "information:")
+      run: (! cat cppcheck-output.log | grep -A 2 "information:")
       continue-on-error: true
 
     - name: Archive cppcheck output
