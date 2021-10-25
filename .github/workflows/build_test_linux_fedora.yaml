@@ -108,41 +108,41 @@ jobs:
       continue-on-error: true
 
     - name: Print cppcheck errors
-      if: ${{ steps.cppcheck.outcome == failure }}
+      if: ${{ steps.cppcheck.outcome == 'failure' }}
       working-directory: ${{ github.workspace }}
       shell: bash
       run: (! cat cppcheck-output.log | grep "error:")
 
     - name: Print cppcheck warnings
-      if: ${{ steps.cppcheck.outcome == failure }}
+      if: ${{ steps.cppcheck.outcome == 'failure' }}
       working-directory: ${{ github.workspace }}
       shell: bash
       run: (! cat cppcheck-output.log | grep "warning:")
       continue-on-error: true
 
     - name: Print cppcheck performance
-      if: ${{ steps.cppcheck.outcome == failure }}
+      if: ${{ steps.cppcheck.outcome == 'failure' }}
       working-directory: ${{ github.workspace }}
       shell: bash
       run: (! cat cppcheck-output.log | grep "performance:")
       continue-on-error: true
 
     - name: Print cppcheck portability
-      if: ${{ steps.cppcheck.outcome == failure }}
+      if: ${{ steps.cppcheck.outcome == 'failure' }}
       working-directory: ${{ github.workspace }}
       shell: bash
       run: (! cat cppcheck-output.log | grep "portability:")
       continue-on-error: true
 
     - name: Print cppcheck missingInclude
-      if: ${{ steps.cppcheck.outcome == failure }}
+      if: ${{ steps.cppcheck.outcome == 'failure' }}
       working-directory: ${{ github.workspace }}
       shell: bash
       run: (! cat cppcheck-output.log | grep "missingInclude:")
       continue-on-error: true
 
     - name: Print cppcheck information
-      if: ${{ steps.cppcheck.outcome == failure }}
+      if: ${{ steps.cppcheck.outcome == 'failure' }}
       working-directory: ${{ github.workspace }}
       shell: bash
       run: (! cat cppcheck-output.log | grep "information:")
@@ -150,7 +150,7 @@ jobs:
 
     - name: Archive cppcheck output
       uses: actions/upload-artifact@v2
-      if: ${{ steps.cppcheck.outcome == failure }}
+      if: ${{ steps.cppcheck.outcome == 'failure' }}
       with:
         name: cppcheck-output
         path: cppcheck-output.log
