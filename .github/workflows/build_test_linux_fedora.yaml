@@ -148,6 +148,13 @@ jobs:
       run: (! cat cppcheck-output.log | grep -A 2 "information:")
       continue-on-error: true
 
+    - name: Print cppcheck notes
+      if: ${{ always() && steps.cppcheck.outcome == 'failure' }}
+      working-directory: ${{ github.workspace }}
+      shell: bash
+      run: (! cat cppcheck-output.log | grep -A 2 "note:")
+      continue-on-error: true
+
     - name: Archive cppcheck output
       uses: actions/upload-artifact@v2
       if: ${{ always() && steps.cppcheck.outcome == 'failure' }}
