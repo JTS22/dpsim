@@ -92,9 +92,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Install cppcheck
-      run: dnf -y install cppcheck ##FIXME: Install cppcheck in Docker image
-
     - name: Run cppcheck
       working-directory: ${{ github.workspace }}
       shell: bash
