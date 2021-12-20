@@ -111,8 +111,8 @@ endif()
 
 if(WITH_RT)
 	set(RT_SOURCES
-		RealTime/RT_DP_CS_R1.cpp
-		RealTime/RT_DP_VS_RL2.cpp
+		# RealTime/RT_DP_CS_R1.cpp
+		# RealTime/RT_DP_VS_RL2.cpp
 	)
 endif()
 
