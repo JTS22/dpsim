@@ -94,7 +94,7 @@ jobs:
       working-directory: ${{ github.workspace }}
       env:
         PYTHONPATH: "${{ github.workspace }}/build"
-      run: pytest -v Examples/Notebooks
+      run: pytest -v Examples/Notebooks/Circuits
     
     - name: Archive notebook outputs
       uses: actions/upload-artifact@v2
