@@ -87,7 +87,7 @@ jobs:
       working-directory: ${{ github.workspace }}
       env:
         PYTHONPATH: "${{ github.workspace }}/build"
-      run: pytest -v Examples/Notebooks/Circuits
+      run: pytest -v Examples/Notebooks
     
     - name: Archive notebook outputs
       uses: actions/upload-artifact@v2
@@ -156,6 +156,12 @@ jobs:
       with:
        name: build-cache
        path: ${{ github.workspace }}/build
+
+    - name: Prepare binary permissions
+      shell: bash
+      run: |
+        chown -R runner ./build/Examples/Cxx
+        chmod -R +x ./bulid/Examples/Cxx
 
     - name: Run Binaries 1/2
       run: ./build/Examples/Cxx/WSCC_9bus_mult_coupled
