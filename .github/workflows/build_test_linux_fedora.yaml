@@ -162,7 +162,6 @@ jobs:
     - name: Prepare binary permissions
       shell: bash
       run: |
-        chown -R runner ./build/Examples/Cxx
         chmod -R +x ./bulid/Examples/Cxx
 
     - name: Run Binaries 1/2
