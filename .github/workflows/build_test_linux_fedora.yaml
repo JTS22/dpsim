@@ -162,7 +162,7 @@ jobs:
     - name: Prepare binary permissions
       shell: bash
       run: |
-        chmod -R +x ./bulid/Examples/Cxx
+        chmod -R +x ./build/Examples/Cxx
 
     - name: Run Binaries 1/2
       run: ./build/Examples/Cxx/WSCC_9bus_mult_coupled
