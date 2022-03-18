@@ -50,7 +50,7 @@ jobs:
     - name: Restore build archive
       uses: actions/download-artifact@v3
       with:
-       name: build-cache-dpsimpy
+       name: build-cache
        path: ${{ github.workspace }}/build
 
     - name: Build every target
