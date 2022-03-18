@@ -139,7 +139,7 @@ jobs:
         cp -R ${{ github.workspace }}/notebooks-new ${{ github.workspace }}/notebooks-previous
 
     - name: Cache new notebook results 2/2
-      if: ${{ github.ref_name }} == 'master'
+      if: github.ref_name == 'master'
       shell: bash
       run: |
         rm -rf ${{ github.workspace }}/notebooks-master
