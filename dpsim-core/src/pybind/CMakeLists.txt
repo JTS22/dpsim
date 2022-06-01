@@ -15,4 +15,4 @@ set_target_properties(dpsimpy
   LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
 )
 target_link_libraries(dpsimpy PRIVATE dpsim)
-target_include_directories(dpsimpy PUBLIC ${DPSIMPY_INCLUDE_DIRS})
+target_include_directories(dpsimpy PUBLIC ../../include)
